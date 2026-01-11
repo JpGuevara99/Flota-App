@@ -1,0 +1,174 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* SERCOAMB Fleet Management Design System */
+
+@layer base {
+  :root {
+    /* Core palette - Professional Navy & Clean Grays */
+    --background: 210 20% 98%;
+    --foreground: 220 30% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+
+    /* Primary - Deep Navy Blue */
+    --primary: 220 60% 25%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Cool Gray */
+    --secondary: 210 15% 93%;
+    --secondary-foreground: 220 30% 20%;
+
+    --muted: 210 15% 96%;
+    --muted-foreground: 215 15% 50%;
+
+    /* Accent - Teal */
+    --accent: 190 70% 40%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 214 20% 88%;
+    --input: 214 20% 88%;
+    --ring: 220 60% 25%;
+
+    --radius: 0.625rem;
+
+    /* Traffic Light System */
+    --status-green: 142 71% 45%;
+    --status-green-bg: 142 76% 95%;
+    --status-green-border: 142 60% 75%;
+    
+    --status-yellow: 38 92% 50%;
+    --status-yellow-bg: 48 96% 95%;
+    --status-yellow-border: 45 90% 70%;
+    
+    --status-red: 0 72% 51%;
+    --status-red-bg: 0 86% 97%;
+    --status-red-border: 0 65% 75%;
+
+    /* Sidebar */
+    --sidebar-background: 220 30% 15%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 190 70% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 30% 22%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 25% 25%;
+    --sidebar-ring: 190 70% 50%;
+
+    /* Gradients */
+    --gradient-header: linear-gradient(135deg, hsl(220 60% 25%) 0%, hsl(220 50% 35%) 100%);
+    --gradient-card-hover: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(210 20% 98%) 100%);
+  }
+
+  .dark {
+    --background: 220 30% 8%;
+    --foreground: 210 20% 95%;
+
+    --card: 220 30% 12%;
+    --card-foreground: 210 20% 95%;
+
+    --popover: 220 30% 12%;
+    --popover-foreground: 210 20% 95%;
+
+    --primary: 190 70% 50%;
+    --primary-foreground: 220 30% 8%;
+
+    --secondary: 220 25% 20%;
+    --secondary-foreground: 210 20% 90%;
+
+    --muted: 220 25% 18%;
+    --muted-foreground: 215 15% 60%;
+
+    --accent: 190 70% 45%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 62% 45%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 220 25% 22%;
+    --input: 220 25% 22%;
+    --ring: 190 70% 50%;
+
+    --status-green-bg: 142 50% 15%;
+    --status-yellow-bg: 48 50% 15%;
+    --status-red-bg: 0 50% 15%;
+
+    --sidebar-background: 220 30% 6%;
+    --sidebar-foreground: 210 20% 90%;
+    --sidebar-primary: 190 70% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 30% 15%;
+    --sidebar-accent-foreground: 210 20% 90%;
+    --sidebar-border: 220 25% 18%;
+    --sidebar-ring: 190 70% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+}
+
+@layer components {
+  .status-badge-green {
+    @apply bg-[hsl(var(--status-green-bg))] text-[hsl(var(--status-green))] border border-[hsl(var(--status-green-border))];
+  }
+
+  .status-badge-yellow {
+    @apply bg-[hsl(var(--status-yellow-bg))] text-[hsl(142,71%,30%)] border border-[hsl(var(--status-yellow-border))];
+    color: hsl(38 80% 35%);
+  }
+
+  .status-badge-red {
+    @apply bg-[hsl(var(--status-red-bg))] text-[hsl(var(--status-red))] border border-[hsl(var(--status-red-border))];
+  }
+
+  .status-dot-green {
+    @apply w-3 h-3 rounded-full bg-[hsl(var(--status-green))] shadow-[0_0_8px_hsl(var(--status-green)/0.5)];
+  }
+
+  .status-dot-yellow {
+    @apply w-3 h-3 rounded-full bg-[hsl(var(--status-yellow))] shadow-[0_0_8px_hsl(var(--status-yellow)/0.5)];
+  }
+
+  .status-dot-red {
+    @apply w-3 h-3 rounded-full bg-[hsl(var(--status-red))] shadow-[0_0_8px_hsl(var(--status-red)/0.5)] animate-pulse;
+  }
+
+  .card-fleet {
+    @apply bg-card rounded-lg border shadow-sm transition-all duration-200 hover:shadow-md hover:border-primary/20;
+  }
+
+  .header-gradient {
+    background: var(--gradient-header);
+  }
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+}
