@@ -1,0 +1,87 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum DocumentType {
+  permiso_circulacion
+  revision_tecnica
+  emision_contaminantes
+  soap
+  mantencion_general
+  miscelaneo
+}
+
+enum HistoryAction {
+  vehicle_created
+  vehicle_updated
+  vehicle_deleted
+  document_added
+  document_renewed
+  document_updated
+  document_deleted
+}
+
+model Vehicle {
+  id           String     @id @default(cuid())
+  type         String
+  project      String
+  year         Int
+  model        String
+  brand        String
+  licensePlate String     @unique
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  documents    Document[]
+  historyLogs  HistoryLog[]
+
+  @@index([project])
+  @@index([licensePlate])
+}
+
+model Document {
+  id               String       @id @default(cuid())
+  vehicleId        String
+  vehicle          Vehicle      @relation(fields: [vehicleId], references: [id], onDelete: Cascade)
+
+  name             String
+  type             DocumentType
+  expirationDate   DateTime
+  issueDate        DateTime
+  renewalFrequency String
+  lastRenewalDate  DateTime?
+  fileName         String?
+  fileUrl          String?
+  observations     String?
+
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([vehicleId])
+  @@index([type])
+  @@index([expirationDate])
+}
+
+model HistoryLog {
+  id          String       @id @default(cuid())
+  vehicleId   String?
+  vehicle     Vehicle?     @relation(fields: [vehicleId], references: [id], onDelete: SetNull)
+
+  vehicleName String?
+  action      HistoryAction
+  field       String?
+  oldValue    String?
+  newValue    String?
+  details     String?
+  timestamp   DateTime     @default(now())
+  user        String
+
+  @@index([timestamp])
+  @@index([vehicleId])
+}
+

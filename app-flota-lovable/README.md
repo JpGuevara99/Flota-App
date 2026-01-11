@@ -60,6 +60,42 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Backend (Base de datos)
+
+Este repo incluye un backend en `app-flota-backend/` (Express + Prisma + Postgres).
+
+- En desarrollo, el frontend usa un proxy de Vite (`/api` -> `http://localhost:3001`).
+- Si el backend no está corriendo, la app cae automáticamente a datos mock.
+
+### Correr backend + frontend (dev)
+
+En 2 terminales:
+
+```bash
+cd app-flota-backend
+npm install
+DATABASE_URL="postgresql://..." npx prisma migrate dev
+DATABASE_URL="postgresql://..." npm run db:seed
+DATABASE_URL="postgresql://..." npm run dev
+```
+
+```bash
+cd app-flota-lovable
+npm install
+npm run dev
+```
+
+## Deploy (gratis recomendado)
+
+- **DB**: Neon (Postgres)
+- **Backend**: Render (Web Service)
+- **Frontend**: Vercel
+
+En Vercel configura:
+
+- **Root Directory**: `app-flota-lovable`
+- **Env**: `VITE_API_BASE_URL` = URL pública del backend (Render), por ejemplo `https://tu-backend.onrender.com`
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
