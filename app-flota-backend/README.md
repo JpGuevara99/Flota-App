@@ -40,7 +40,7 @@ DATABASE_URL="postgresql://..." npm run dev
 - En **Render** crea un **Web Service** desde este repo:
   - **Root directory**: `app-flota-backend`
   - **Build command**:
-    - `npm ci --include=dev && npm run build && prisma generate && prisma migrate deploy`
+    - `npm ci --include=dev && npm run build && npx prisma generate && npx prisma migrate deploy`
   - **Start command**:
     - `npm run start`
   - **Environment variables**:

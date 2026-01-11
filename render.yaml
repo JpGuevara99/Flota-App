@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: app-flota-backend
+    env: node
+    rootDir: app-flota-backend
+    buildCommand: npm ci --include=dev && npm run build && npx prisma generate && npx prisma migrate deploy
+    startCommand: npm run start
+    healthCheckPath: /health
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: CORS_ORIGIN
+        sync: false
