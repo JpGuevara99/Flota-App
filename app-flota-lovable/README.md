@@ -60,6 +60,31 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
+## Backend (Base de datos)
+
+Este repo incluye un backend en `app-flota-backend/` (Express + Prisma + SQLite).
+
+- En desarrollo, el frontend usa un proxy de Vite (`/api` -> `http://localhost:3001`).
+- Si el backend no está corriendo, la app cae automáticamente a datos mock.
+
+### Correr backend + frontend (dev)
+
+En 2 terminales:
+
+```bash
+cd app-flota-backend
+npm install
+DATABASE_URL="file:./prisma/dev.db" npx prisma migrate dev --name init
+DATABASE_URL="file:./prisma/dev.db" npm run db:seed
+DATABASE_URL="file:./prisma/dev.db" npm run dev
+```
+
+```bash
+cd app-flota-lovable
+npm install
+npm run dev
+```
+
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
