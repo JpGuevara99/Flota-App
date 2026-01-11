@@ -1,6 +1,78 @@
-import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useCallback, ReactNode, useEffect, useMemo } from 'react';
 import { Vehicle, HistoryLog, Document, HistoryAction, generateId, DOCUMENT_TYPE_LABELS } from '@/types/vehicle';
 import { mockVehicles, mockHistory } from '@/data/mockVehicles';
+
+const FLEET_STORAGE_KEY = 'fleetState:v1';
+
+type StoredDocument = Omit<Document, 'expirationDate' | 'issueDate' | 'lastRenewalDate'> & {
+  expirationDate: string;
+  issueDate: string;
+  lastRenewalDate?: string;
+};
+
+type StoredVehicle = Omit<Vehicle, 'createdAt' | 'updatedAt' | 'documents'> & {
+  documents: StoredDocument[];
+  createdAt: string;
+  updatedAt: string;
+};
+
+type StoredHistoryLog = Omit<HistoryLog, 'timestamp'> & { timestamp: string };
+
+type StoredFleetState = {
+  vehicles: StoredVehicle[];
+  history: StoredHistoryLog[];
+};
+
+const isBrowser = () => typeof window !== 'undefined' && typeof window.localStorage !== 'undefined';
+
+const serializeFleetState = (vehicles: Vehicle[], history: HistoryLog[]): StoredFleetState => ({
+  vehicles: vehicles.map((v) => ({
+    ...v,
+    createdAt: v.createdAt.toISOString(),
+    updatedAt: v.updatedAt.toISOString(),
+    documents: v.documents.map((d) => ({
+      ...d,
+      expirationDate: d.expirationDate.toISOString(),
+      issueDate: d.issueDate.toISOString(),
+      lastRenewalDate: d.lastRenewalDate ? d.lastRenewalDate.toISOString() : undefined,
+    })),
+  })),
+  history: history.map((h) => ({
+    ...h,
+    timestamp: h.timestamp.toISOString(),
+  })),
+});
+
+const deserializeFleetState = (state: StoredFleetState): { vehicles: Vehicle[]; history: HistoryLog[] } => ({
+  vehicles: (state.vehicles ?? []).map((v) => ({
+    ...v,
+    createdAt: new Date(v.createdAt),
+    updatedAt: new Date(v.updatedAt),
+    documents: (v.documents ?? []).map((d) => ({
+      ...d,
+      expirationDate: new Date(d.expirationDate),
+      issueDate: new Date(d.issueDate),
+      lastRenewalDate: d.lastRenewalDate ? new Date(d.lastRenewalDate) : undefined,
+    })),
+  })),
+  history: (state.history ?? []).map((h) => ({
+    ...h,
+    timestamp: new Date(h.timestamp),
+  })),
+});
+
+const loadFleetState = (): { vehicles: Vehicle[]; history: HistoryLog[] } | null => {
+  if (!isBrowser()) return null;
+  try {
+    const raw = window.localStorage.getItem(FLEET_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as StoredFleetState;
+    if (!parsed || !Array.isArray(parsed.vehicles) || !Array.isArray(parsed.history)) return null;
+    return deserializeFleetState(parsed);
+  } catch {
+    return null;
+  }
+};
 
 interface FleetContextType {
   vehicles: Vehicle[];
@@ -24,8 +96,21 @@ export const useFleet = () => {
 };
 
 export const FleetProvider = ({ children }: { children: ReactNode }) => {
-  const [vehicles, setVehicles] = useState<Vehicle[]>(mockVehicles);
-  const [history, setHistory] = useState<HistoryLog[]>(mockHistory);
+  const initialState = useMemo(() => loadFleetState() ?? { vehicles: mockVehicles, history: mockHistory }, []);
+
+  const [vehicles, setVehicles] = useState<Vehicle[]>(initialState.vehicles);
+  const [history, setHistory] = useState<HistoryLog[]>(initialState.history);
+
+  // Persist demo state across refreshes (per-browser).
+  useEffect(() => {
+    if (!isBrowser()) return;
+    try {
+      const stored = serializeFleetState(vehicles, history);
+      window.localStorage.setItem(FLEET_STORAGE_KEY, JSON.stringify(stored));
+    } catch {
+      // Ignore storage errors (quota, privacy mode, etc.)
+    }
+  }, [vehicles, history]);
 
   const addHistoryLog = useCallback((
     action: HistoryAction,
